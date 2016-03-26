@@ -45,7 +45,7 @@
 		<property name="dir" value="${project}-${version}" />
 		<mkdir dir="${dir}" />
 		<copy todir="${dir}">
-			<fileset dir="." includes="README,COPYING,INSTALL,ChangeLog,Makefile,build.xml" />
+			<fileset dir="." includes="README,LICENSE,INSTALL,ChangeLog,Makefile,build.xml" />
 		</copy>
 		<copy file="dist/${project}.jar" todir="${dir}/dist" />
 		<mkdir dir="${dir}/doc" />

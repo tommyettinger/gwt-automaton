@@ -232,7 +232,7 @@ final public class Datatypes {
 	/**
 	 * Invoke during compilation to pre-build automata.
 	 * Automata are stored in the directory specified by the system property <tt>dk.brics.automaton.datatypes</tt>.
-	 * (Default: <tt>build</tt>, relative to the current working directory.)
+	 * (Default: <tt>src/main/resources</tt>, relative to the current working directory.)
 	 */
 	public static void main(String[] args) {
 		long t = System.currentTimeMillis();
@@ -480,7 +480,7 @@ final public class Datatypes {
 	private static void store(String name, Automaton a) {
 		String dir = System.getProperty("dk.brics.automaton.datatypes");
 		if (dir == null)
-			dir = "build";
+			dir = "src/main/resources";
 		try {
 			a.store((new FileOutputStream(dir + "/" + name + ".aut")));
 		} catch (IOException e) {
@@ -792,7 +792,7 @@ final public class Datatypes {
 		System.out.println("Building Unicode category automata...");
 		Map<String,Set<Integer>> categories = new HashMap<String,Set<Integer>>();
 		try {
-			StreamTokenizer st = new StreamTokenizer(new BufferedReader(new FileReader("src/Unicode.txt")));
+			StreamTokenizer st = new StreamTokenizer(new BufferedReader(new FileReader(Datatypes.class.getResource("/Unicode.txt").getFile())));
 			st.resetSyntax();
 			st.whitespaceChars(';', ';');
 			st.whitespaceChars('\n', ' ');
