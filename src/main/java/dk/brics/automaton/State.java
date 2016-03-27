@@ -30,11 +30,7 @@
 package dk.brics.automaton;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /** 
  * <tt>Automaton</tt> state. 
@@ -51,7 +47,7 @@ public class State implements Serializable, Comparable<State> {
 	
 	int id;
 	static int next_id;
-	
+
 	/** 
 	 * Constructs a new state. Initially, the new state is a reject state. 
 	 */
@@ -189,4 +185,11 @@ public class State implements Serializable, Comparable<State> {
 	public int hashCode() {
 		return super.hashCode();
 	}
+
+    void alter(boolean accept, int number, Transition... transitions)
+    {
+        this.accept = accept;
+        Collections.addAll(this.transitions, transitions);
+        this.number = number;
+    }
 }

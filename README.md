@@ -1,15 +1,16 @@
 # gwt-automaton
-Regular expression (DFA/NFA) lib; GWT-compatible, based on dk.brics.automaton
+Regular expression (DFA) lib; GWT-compatible, based on dk.brics.automaton
 
-This package contains a full DFA/NFA implementation with Unicode
+This package contains a full DFA implementation with Unicode
 alphabet and support for all standard regular expression operations.
 It is not compatible with existing syntax for most other regular expression
 engines, but it can be exceptionally fast, with
 [some benchmarks](https://www.voxxed.com/blog/2016/01/java-regular-expression-library-benchmarks-2015/)
 putting the 1.11-8 release (pre-fork) at 2 orders of magnitude faster than
-the Java standard library's regex classes. This is a fork of the excellent
-dk.brics.automaton project to add GWT compatibility and move the build to
-use Maven.
+the Java standard library's regex classes. It does not support capturing groups
+or other replacements of parts of matched Strings. This is a fork of the
+excellent dk.brics.automaton project to allow GWT compatibility and move the
+build to use Maven.
 
 For more information, go to the package home page at
 http://www.brics.dk/automaton/

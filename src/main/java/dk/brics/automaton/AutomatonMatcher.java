@@ -29,7 +29,7 @@
 
 package dk.brics.automaton;
 
-import java.util.regex.MatchResult;
+//import java.util.regex.MatchResult;
 
 /**
  * A tool that performs match operations on a given character sequence using
@@ -39,7 +39,7 @@ import java.util.regex.MatchResult;
  * @see RunAutomaton#newMatcher(java.lang.CharSequence)
  * @see RunAutomaton#newMatcher(java.lang.CharSequence, int, int)
  */
-public class AutomatonMatcher implements MatchResult {
+public class AutomatonMatcher {
 
 	AutomatonMatcher(final CharSequence chars, final RunAutomaton automaton) {
 		this.chars = chars;
@@ -256,7 +256,7 @@ public class AutomatonMatcher implements MatchResult {
 	 * @return a {@code MatchResult} with the state of this
 	 *  {@code AutomatonMatcher}.
 	 */
-	public MatchResult toMatchResult() {
+	public AutomatonMatcher toMatchResult() {
 		final AutomatonMatcher match = new AutomatonMatcher(chars, automaton);
 		match.matchStart = this.matchStart;
 		match.matchEnd = this.matchEnd;

@@ -29,24 +29,8 @@
 
 package dk.brics.automaton;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Finite-state automaton with regular expression operations.
@@ -137,13 +121,13 @@ public class Automaton implements Serializable, Cloneable {
 		deterministic = true;
 		singleton = null;
 	}
-	
+	/*
 	boolean isDebug() {
 		if (is_debug == null)
 			is_debug = Boolean.valueOf(System.getProperty("dk.brics.automaton.debug") != null);
 		return is_debug.booleanValue();
 	}
-	
+	*/
 	/** 
 	 * Selects minimization algorithm (default: <code>MINIMIZE_HOPCROFT</code>). 
 	 * @param algorithm minimization algorithm
@@ -268,20 +252,26 @@ public class Automaton implements Serializable, Cloneable {
 	public Set<State> getStates() {
 		expandSingleton();
 		Set<State> visited;
+		/*
 		if (isDebug())
 			visited = new LinkedHashSet<State>();
 		else
 			visited = new HashSet<State>();
+		*/
+		visited = new HashSet<State>();
 		LinkedList<State> worklist = new LinkedList<State>();
 		worklist.add(initial);
 		visited.add(initial);
 		while (worklist.size() > 0) {
 			State s = worklist.removeFirst();
 			Collection<Transition> tr;
+			/*
 			if (isDebug())
 				tr = s.getSortedTransitions(false);
 			else
 				tr = s.transitions;
+			*/
+			tr = s.transitions;
 			for (Transition t : tr)
 				if (!visited.contains(t.to)) {
 					visited.add(t.to);
@@ -664,46 +654,14 @@ public class Automaton implements Serializable, Cloneable {
 		else
 			return clone();
 	}
-	
-	/** 
-	 * Retrieves a serialized <code>Automaton</code> located by a URL.
-	 * @param url URL of serialized automaton
-	 * @exception IOException if input/output related exception occurs
-	 * @exception OptionalDataException if the data is not a serialized object
-	 * @exception InvalidClassException if the class serial number does not match
-	 * @exception ClassCastException if the data is not a serialized <code>Automaton</code>
-	 * @exception ClassNotFoundException if the class of the serialized object cannot be found
-	 */
-	public static Automaton load(URL url) throws IOException, OptionalDataException, ClassCastException, 
-	                                             ClassNotFoundException, InvalidClassException {
-		return load(url.openStream());
-	}
-	
-	/**
-	 * Retrieves a serialized <code>Automaton</code> from a stream.
-	 * @param stream input stream with serialized automaton
-	 * @exception IOException if input/output related exception occurs
-	 * @exception OptionalDataException if the data is not a serialized object
-	 * @exception InvalidClassException if the class serial number does not match
-	 * @exception ClassCastException if the data is not a serialized <code>Automaton</code>
-	 * @exception ClassNotFoundException if the class of the serialized object cannot be found
-	 */
-	public static Automaton load(InputStream stream) throws IOException, OptionalDataException, ClassCastException, 
-	                                                        ClassNotFoundException, InvalidClassException {
-		ObjectInputStream s = new ObjectInputStream(stream);
-		return (Automaton)s.readObject();
-	}
-	
-	/**
-	 * Writes this <code>Automaton</code> to the given stream.
-	 * @param stream output stream for serialized automaton
-	 * @exception IOException if input/output related exception occurs
-	 */
-	public void store(OutputStream stream) throws IOException {
-		ObjectOutputStream s = new ObjectOutputStream(stream);
-		s.writeObject(this);
-		s.flush();
-	}
+
+    public static Automaton load(State initial, boolean deterministic, String singleton) {
+        Automaton a = new Automaton();
+        a.initial = initial;
+        a.deterministic = deterministic;
+        a.singleton = singleton;
+        return a;
+    }
 
 	/** 
 	 * See {@link BasicAutomata#makeEmpty()}.
@@ -949,15 +907,22 @@ public class Automaton implements Serializable, Cloneable {
 	public String getShortestExample(boolean accepted) {
 		return BasicOperations.getShortestExample(this, accepted);
 	}
-	
-	/**
-	 * See {@link BasicOperations#run(Automaton, String)}.
-	 */
-	public boolean run(String s) {
-		return BasicOperations.run(this, s);
-	}
-	
-	/**
+
+    /**
+     * See {@link BasicOperations#run(Automaton, String)}.
+     */
+    public boolean run(String s) {
+        return BasicOperations.run(this, s);
+    }
+
+    /**
+     * See {@link BasicOperations#runReversed(Automaton, String)}.
+     */
+    public boolean runReversed(String s) {
+        return BasicOperations.runReversed(this, s);
+    }
+
+    /**
 	 * See {@link MinimizationOperations#minimize(Automaton)}.
 	 */
 	public void minimize() {

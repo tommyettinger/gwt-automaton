@@ -215,6 +215,9 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
+# IntelliJ IDEA
+.idea
+*.iml
 
 # jEdit garbage
 *~
@@ -222,3 +225,6 @@ pip-log.txt
 *#*.*#
 
 target/
+
+partial.txt
+partial2.txt

@@ -29,15 +29,7 @@
 
 package dk.brics.automaton;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URL;
 import java.util.Set;
 
 /**
@@ -152,46 +144,6 @@ public class RunAutomaton implements Serializable {
 	}
 
 	/**
-	 * Retrieves a serialized <code>RunAutomaton</code> located by a URL.
-	 * @param url URL of serialized automaton
-	 * @exception IOException if input/output related exception occurs
-	 * @exception OptionalDataException if the data is not a serialized object
-	 * @exception InvalidClassException if the class serial number does not match
-	 * @exception ClassCastException if the data is not a serialized <code>RunAutomaton</code>
-	 * @exception ClassNotFoundException if the class of the serialized object cannot be found
-	 */
-	public static RunAutomaton load(URL url) throws IOException, OptionalDataException, ClassCastException, 
-													ClassNotFoundException, InvalidClassException {
-		return load(url.openStream());
-	}
-
-	/**
-	 * Retrieves a serialized <code>RunAutomaton</code> from a stream.
-	 * @param stream input stream with serialized automaton
-	 * @exception IOException if input/output related exception occurs
-	 * @exception OptionalDataException if the data is not a serialized object
-	 * @exception InvalidClassException if the class serial number does not match
-	 * @exception ClassCastException if the data is not a serialized <code>RunAutomaton</code>
-	 * @exception ClassNotFoundException if the class of the serialized object cannot be found
-	 */
-	public static RunAutomaton load(InputStream stream) throws IOException, OptionalDataException, ClassCastException, 
-															   ClassNotFoundException, InvalidClassException {
-		ObjectInputStream s = new ObjectInputStream(stream);
-		return (RunAutomaton) s.readObject();
-	}
-
-	/**
-	 * Writes this <code>RunAutomaton</code> to the given stream.
-	 * @param stream output stream for serialized automaton
-	 * @exception IOException if input/output related exception occurs
-	 */
-	public void store(OutputStream stream) throws IOException {
-		ObjectOutputStream s = new ObjectOutputStream(stream);
-		s.writeObject(this);
-		s.flush();
-	}
-
-	/**
 	 * Constructs a new <code>RunAutomaton</code> from a deterministic
 	 * <code>Automaton</code>. If the given automaton is not deterministic,
 	 * it is determinized first.
@@ -237,7 +189,7 @@ public class RunAutomaton implements Serializable {
 			return transitions[state * points.length + classmap[c - Character.MIN_VALUE]];
 	}
 
-	/** 
+	/**
 	 * Returns true if the given string is accepted by this automaton. 
 	 */
 	public boolean run(String s) {
@@ -266,6 +218,43 @@ public class RunAutomaton implements Serializable {
 			if (accept[p])
 				max = r;
 			if (offset == l)
+				break;
+			p = step(p, s.charAt(offset));
+			if (p == -1)
+				break;
+		}
+		return max;
+	}
+
+	/**
+	 * Returns true if the given string, when traversed in reverse, is accepted by this automaton.
+	 */
+	public boolean runReversed(String s) {
+		int p = initial;
+		int l = s.length() - 1;
+		for (int i = l; i >= 0; i--) {
+			p = step(p, s.charAt(i));
+			if (p == -1)
+				return false;
+		}
+		return accept[p];
+	}
+
+	/**
+	 * Returns the length of the longest accepted run of the given string,
+	 * when traversed in reverse, starting at the given offset.
+	 * @param s the string
+	 * @param offset offset into <code>s</code> where the run starts
+	 * @return length of the longest accepted run, -1 if no run is accepted
+	 */
+	public int runReversed(String s, int offset) {
+		int p = initial;
+		int l = s.length() - 1;
+		int max = -1;
+		for (int r = 0; offset >= -1; offset--, r++) {
+			if (accept[p])
+				max = r;
+			if (offset < 0)
 				break;
 			p = step(p, s.charAt(offset));
 			if (p == -1)
