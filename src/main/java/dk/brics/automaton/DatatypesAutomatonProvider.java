@@ -41,7 +41,7 @@ public class DatatypesAutomatonProvider implements AutomatonProvider {
 	 * from {@link Datatypes#get(String)}.
 	 */
 	public DatatypesAutomatonProvider() {
-		enable_unicodeblocks = enable_unicodecategories = enable_xml = true;
+		enable_unicodeblocks = enable_unicodecategories /* = enable_xml */ = true;
 	}
 	
 	/**

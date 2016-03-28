@@ -250,6 +250,42 @@ final public class DatatypeGenerator {
                 current = "Aut" + a_ctr++;
                 sbMap.append("if(name.equals(\"");
                 sbMap.append(e.getKey());
+                if(e.getKey().length() == 1) {
+                    switch (e.getKey().charAt(0)) {
+                        case 'L':
+                        case 'N':
+                        case 'S':
+                        case 'Z':
+                        case 'M':
+                        case 'P':
+                        case 'C':
+                            sbMap.append("\") || name.equals(\"");
+                            break;
+                    }
+                    switch (e.getKey().charAt(0)) {
+                        case 'L':
+                            sbMap.append("Letter");
+                            break;
+                        case 'N':
+                            sbMap.append("Number");
+                            break;
+                        case 'S':
+                            sbMap.append("Symbol");
+                            break;
+                        case 'Z':
+                            sbMap.append("Separator");
+                            break;
+                        case 'M':
+                            sbMap.append("Mark");
+                            break;
+                        case 'P':
+                            sbMap.append("Punctuation");
+                            break;
+                        case 'C':
+                            sbMap.append("Other");
+                            break;
+                    }
+                }
                 sbMap.append("\")){a=get");
                 sbMap.append(current);
                 sbMap.append("();automata.put(name, a);}\nelse ");
@@ -379,7 +415,9 @@ final public class DatatypeGenerator {
 
 		String[] uriexps = {
 				"digit", "[0-9]",
-				"upalpha", "[A-Z]",
+                // "IPv4address", "(<digit>{1,}\\.){3}<digit>{1,}",
+                "IPv4address", "(<digit>{1,3}\\.){3}<digit>{1,3}", // RFC 2732 / 2373
+                "upalpha", "[A-Z]",
 				"lowalpha", "[a-z]",
 				"alpha", "<lowalpha>|<upalpha>",
 				"alphanum", "<alpha>|<digit>",
@@ -424,6 +462,7 @@ final public class DatatypeGenerator {
 				"relativeURI", "(<net_path>|<abs_path>|<rel_path>)(\\?<query>)?",
 				"absoluteURI", "<scheme>:(<hier_part>|<opaque_part>)",
 				"URI", "(<absoluteURI>|<relativeURI>)?(\\#<fragment>)?"
+
 		};
 		System.out.println("Building URI automaton...");
 		putFrom("URI", buildMap(uriexps));
@@ -434,11 +473,11 @@ final public class DatatypeGenerator {
 		String[] xsdmisc = {
 				"_", "[ \t\n\r]*",
 				"d", "[0-9]",
-				"Z", "[-+](<00-13>:<00-59>|14:00)|Z",
+				"Z", "[-+](<00,13>:<00,59>|14:00)|Z",
 				"Y", "(<d>{4,})&~(0000)",
-				"M", "<01-12>",
-				"D", "<01-31>",
-				"T", "<00-23>:<00-59>:<00-59>|24:00:00",
+				"M", "<01,12>",
+				"D", "<01,31>",
+				"T", "<00,23>:<00,59>:<00,59>|24:00:00",
 				"B64", "[A-Za-z0-9+/]",
 				"B16", "[AEIMQUYcgkosw048]",
 				"B04", "[AQgw]",
@@ -664,6 +703,16 @@ final public class DatatypeGenerator {
 		Automaton cn = Automaton.minimize(automata.get("Char").clone().intersection(Automaton.union(assigned).complement()));
 		put(automata, "Cn", cn);
 		put(automata, "C", automata.get("C").clone().union(cn));
+        put(automata, "_linebreak", Automaton.makeString("\r\n").union(Automaton.makeCharSet("\n\u000B\u000C\r\u0085\u2028\u2029")));
+        put(automata, "_word", automata.get("L").clone()
+                .union(automata.get("Mn").clone().
+                        union(automata.get("Mc").clone()
+                                .union(Automaton.makeCharSet("0123456789_")))));
+        put(automata, "_horizontal", Automaton.makeCharSet(" \t\u00A0\u1680\u180e\u2000-\u200a\u202f\u205f\u3000"));
+        put(automata, "_vertical", Automaton.makeCharSet("\n\u000B\f\r\u0085\u2028\u2029"));
+        put(automata, "_space", Automaton.makeCharSet(" \t\n\u000B\f\r"));
+        put(automata, "_digit", Automaton.makeCharRange('0', '9'));
+
 	}
 	
 	private static Automaton makeCodePoint(int cp) {
@@ -751,7 +800,7 @@ final public class DatatypeGenerator {
             case '\'':
                 return "\\'";
             case '\"':
-                return "\\";
+                return "\\\"";
             case '\\':
                 return "\\\\";
             default:
